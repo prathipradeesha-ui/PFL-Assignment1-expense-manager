@@ -21,7 +21,16 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'cost_gbp' => 'required|numeric|min:0',
+            'description' => 'required|string|max:1000',
+            'expense_type' => 'required|in:travel,food,other',
+        ]);
+
+        $expense = Expense::create($validated);
+
+        return response()->json($expense, 201);
     }
 
     /**
