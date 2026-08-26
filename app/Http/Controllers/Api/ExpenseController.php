@@ -8,17 +8,11 @@ use App\Models\Expense;
 
 class ExpenseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return Expense::all();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -33,27 +27,29 @@ class ExpenseController extends Controller
         return response()->json($expense, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Expense $expense)
     {
-        //
+        return $expense;
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Expense $expense)
     {
-        //
+        $validated = $request->validate([
+            'date' => 'sometimes|required|date',
+            'cost_gbp' => 'sometimes|required|numeric|min:0',
+            'description' => 'sometimes|required|string|max:1000',
+            'expense_type' => 'sometimes|required|in:travel,food,other',
+        ]);
+
+        $expense->update($validated);
+
+        return response()->json($expense);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Expense $expense)
     {
-        //
+        $expense->delete();
+
+        return response()->json(null, 204);
     }
 }
