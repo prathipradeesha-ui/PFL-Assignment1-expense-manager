@@ -8,9 +8,9 @@ use App\Models\Expense;
 
 class ExpenseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Expense::all();
+        return $request->user()->expenses;
     }
 
     public function store(Request $request)
@@ -22,18 +22,22 @@ class ExpenseController extends Controller
             'expense_type' => 'required|in:travel,food,other',
         ]);
 
-        $expense = Expense::create($validated);
+        $expense = $request->user()->expenses()->create($validated);
 
         return response()->json($expense, 201);
     }
 
     public function show(Expense $expense)
     {
+        $this->authorize('view', $expense);
+
         return $expense;
     }
 
     public function update(Request $request, Expense $expense)
     {
+        $this->authorize('update', $expense);
+
         $validated = $request->validate([
             'date' => 'sometimes|required|date',
             'cost_gbp' => 'sometimes|required|numeric|min:0',
@@ -48,6 +52,8 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
+        $this->authorize('delete', $expense);
+
         $expense->delete();
 
         return response()->json(null, 204);
