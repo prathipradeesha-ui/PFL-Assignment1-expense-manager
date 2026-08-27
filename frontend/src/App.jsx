@@ -13,6 +13,9 @@ function App() {
   const [authMode, setAuthMode] = useState('login');
   const [error, setError] = useState('');
 
+  // Calculate the total cost of all expenses for the summary display
+  const totalSpend = expenses.reduce((sum, exp) => sum + parseFloat(exp.cost_gbp), 0);
+
   useEffect(() => {
     if (token) fetchExpenses();
   }, [token]);
@@ -213,9 +216,12 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-teal-900 px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-amber-400"></div>
-          <h1 className="font-semibold text-white">Expense Management System</h1>
+          <div>
+            <h1 className="font-semibold text-white leading-tight">Expense Management System</h1>
+            <p className="text-xs text-teal-200">Track spending, simply.</p>
+          </div>
         </div>
         <button onClick={handleLogout} className="text-sm text-teal-200 hover:text-white transition">
           Log out
@@ -227,6 +233,7 @@ function App() {
           <>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium text-slate-700">Your Expenses</h2>
+              <p className="text-sm text-slate-500 mb-3">Total spend: <span className="font-semibold text-amber-600">£{totalSpend.toFixed(2)}</span></p>
               <button
                 onClick={() => setView('add')}
                 className="bg-teal-700 hover:bg-teal-800 transition text-white text-sm px-4 py-2 rounded-md shadow-sm"
