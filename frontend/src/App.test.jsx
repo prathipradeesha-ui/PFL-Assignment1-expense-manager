@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 
 beforeEach(() => {
   localStorage.clear();
+  vi.restoreAllMocks();
 });
 
 describe('App - logged out state', () => {
@@ -21,9 +22,44 @@ describe('App - logged out state', () => {
 
   it('requires email and password fields on the login form', () => {
     render(<App />);
-    const emailInput = screen.getByLabelText('Email');
-    const passwordInput = screen.getByLabelText('Password');
-    expect(emailInput).toBeRequired();
-    expect(passwordInput).toBeRequired();
+    expect(screen.getByLabelText('Email')).toBeRequired();
+    expect(screen.getByLabelText('Password')).toBeRequired();
+  });
+});
+
+describe('App - logged in state', () => {
+  beforeEach(() => {
+    localStorage.setItem('token', 'fake-test-token');
+  });
+
+  it('displays expenses fetched from the API', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ([
+        { id: 1, date: '2026-08-20', cost_gbp: '45.50', description: 'Taxi ride', expense_type: 'travel' },
+      ]),
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Taxi ride')).toBeInTheDocument();
+    });
+  });
+
+  it('shows the stats bar with correct total', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ([
+        { id: 1, date: '2026-08-20', cost_gbp: '10.00', description: 'Item A', expense_type: 'food' },
+        { id: 2, date: '2026-08-21', cost_gbp: '20.00', description: 'Item B', expense_type: 'other' },
+      ]),
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('£30.00')).toBeInTheDocument();
+    });
   });
 });
