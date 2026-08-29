@@ -16,6 +16,8 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
+    // HasApiTokens (Sanctum) adds createToken() and related methods,
+    // enabling this User to authenticate via API tokens.
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
@@ -31,6 +33,8 @@ class User extends Authenticatable
         ];
     }
 
+    // One user can have many expenses (inverse of Expense::user()).
+    // Lets us call $user->expenses to get all of a user's own expenses.
     public function expenses()
     {
         return $this->hasMany(Expense::class);

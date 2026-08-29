@@ -10,6 +10,9 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    // Register a new user account.
+    // Password is hashed with bcrypt (never stored as plain text).
+    // Returns a Sanctum token so the frontend can make authenticated requests.
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -32,6 +35,9 @@ class AuthController extends Controller
         ], 201);
     }
 
+    // Log in an existing user.
+    // Uses a deliberately vague error message (security best practice -
+    // doesn't reveal whether the email exists or the password was wrong).
     public function login(Request $request)
     {
         $validated = $request->validate([
@@ -55,6 +61,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // Log out the current user by deleting their active Sanctum token.
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
