@@ -32,7 +32,7 @@ describe('App - logged in state', () => {
     localStorage.setItem('token', 'fake-test-token');
   });
 
-  it('displays expenses fetched from the API', async () => {
+  it('shows the dashboard with recent transactions after login', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ([
@@ -47,7 +47,7 @@ describe('App - logged in state', () => {
     });
   });
 
-  it('shows the stats bar with correct total', async () => {
+  it('shows a total for each expense type on the dashboard', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ([
@@ -59,7 +59,29 @@ describe('App - logged in state', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('£30.00')).toBeInTheDocument();
+      expect(screen.getAllByText('£10.00').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('£20.00').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('switches to the Expenses tab and shows the expense list', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ([
+        { id: 1, date: '2026-08-20', cost_gbp: '45.50', description: 'Taxi ride', expense_type: 'travel' },
+      ]),
+    });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Taxi ride')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Expenses'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Your Expenses')).toBeInTheDocument();
     });
   });
 });
