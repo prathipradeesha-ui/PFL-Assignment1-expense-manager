@@ -75,10 +75,17 @@ function App() {
     }
   }
 
-  function handleLogout() {
-    localStorage.removeItem('token');
-    setToken(null);
-    setExpenses([]);
+  async function handleLogout() {
+    try {
+      await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } finally {
+      localStorage.removeItem("token");
+      setToken(null);
+      setExpenses([]);
+    }
   }
 
   async function handleAddExpense(e) {
@@ -99,7 +106,7 @@ function App() {
       fetchExpenses();
     } else {
       const data = await res.json();
-      setError(JSON.stringify(data.errors || data.message));
+      setError(data.errors ? Object.values(data.errors).flat().join(" ") : (data.message || "Something went wrong."));
     }
   }
 
