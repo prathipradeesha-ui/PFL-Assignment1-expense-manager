@@ -29,7 +29,7 @@ function App() {
 
   useEffect(() => {
     if (token) fetchExpenses();
-  }, [token]);
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchExpenses() {
     const res = await fetch(`${API_URL}/expenses`, {
@@ -271,6 +271,20 @@ function App() {
 
         {view === 'dashboard' && (
           <div className="space-y-4">
+            <div className="bg-white rounded-xl border border-slate-100 p-4 flex justify-around text-center">
+              <div>
+                <p className="text-xs text-slate-400">Total</p>
+                <p className="font-semibold text-amber-600">£{totalSpend.toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400">Count</p>
+                <p className="font-semibold text-teal-800">{expenseCount}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400">Average</p>
+                <p className="font-semibold text-teal-800">£{avgSpend.toFixed(2)}</p>
+              </div>
+            </div>
             <div className="grid grid-cols-3 gap-3">
               {['travel', 'food', 'other'].map((type) => {
                 const typeExpenses = expenses.filter((e) => e.expense_type === type);
