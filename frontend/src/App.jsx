@@ -139,7 +139,7 @@ function App() {
         <div className="w-full max-w-sm bg-white rounded-xl shadow-lg border border-slate-100 p-6">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-            <h1 className="text-xl font-semibold text-teal-900">
+            <h1 className="text-xl font-semibold text-teal-900" style={{ fontSize: "1.25rem" }}>
               Expense Management System
             </h1>
           </div>
@@ -240,12 +240,12 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-teal-900 px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-amber-400"></div>
-          <div>
-            <h1 className="font-semibold text-white leading-tight">Expense Management System</h1>
-            <p className="text-xs text-teal-200">Track spending, simply.</p>
-          </div>
+        <div>
+          <h1 className="font-semibold text-white leading-tight flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+            Expense Management System
+          </h1>
+          <p className="text-xs text-teal-200 ml-4">Track spending, simply.</p>
         </div>
         <button onClick={handleLogout} className="text-sm text-teal-200 hover:text-white transition">
           Log out

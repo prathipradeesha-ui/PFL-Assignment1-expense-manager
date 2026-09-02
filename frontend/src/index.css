@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* Prevent Bootstrap's default h1 sizing from overriding Tailwind utility classes */
+h1 {
+  font-size: revert-layer;
+}
