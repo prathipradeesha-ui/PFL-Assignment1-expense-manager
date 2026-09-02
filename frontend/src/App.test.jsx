@@ -85,3 +85,44 @@ describe('App - logged in state', () => {
     });
   });
 });
+
+describe('App - additional interactions', () => {
+  it('logs in successfully and shows the dashboard', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ token: 'new-token', user: { id: 1, name: 'Test User' } }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ([]),
+      });
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Log out')).toBeInTheDocument();
+    });
+  });
+
+  it('shows an error message on failed login', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({ message: 'The provided credentials are incorrect.' }),
+    });
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'wrong@example.com' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'wrongpass' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('The provided credentials are incorrect.')).toBeInTheDocument();
+    });
+  });
+});
