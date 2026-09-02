@@ -126,3 +126,68 @@ describe('App - additional interactions', () => {
     });
   });
 });
+
+describe('App - expense CRUD interactions', () => {
+  beforeEach(() => {
+    localStorage.setItem('token', 'fake-test-token');
+  });
+
+  it('adds a new expense successfully', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ([]) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 1, description: 'New Item' }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: 1, date: '2026-08-20', cost_gbp: '15.00', description: 'New Item', expense_type: 'food' }]) });
+
+    render(<App />);
+
+    await waitFor(() => screen.getByText('Expenses'));
+    fireEvent.click(screen.getByText('Expenses'));
+    fireEvent.click(screen.getByText('+ Add Expense'));
+
+    fireEvent.change(screen.getByLabelText('Date'), { target: { value: '2026-08-20' } });
+    fireEvent.change(screen.getByLabelText('Cost (GBP)'), { target: { value: '15.00' } });
+    fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'New Item' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('New Item')).toBeInTheDocument();
+    });
+  });
+
+  it('deletes an expense after confirming in the modal', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: 1, date: '2026-08-20', cost_gbp: '15.00', description: 'To Delete', expense_type: 'food' }]) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({}) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ([]) });
+
+    render(<App />);
+
+    await waitFor(() => screen.getByText('Expenses'));
+    fireEvent.click(screen.getByText('Expenses'));
+
+    await waitFor(() => screen.getByText('To Delete'));
+    fireEvent.click(screen.getByLabelText('Delete To Delete'));
+
+    await waitFor(() => screen.getByText('Confirm Delete'));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Confirm Delete')).not.toBeInTheDocument();
+    });
+  });
+
+  it('logs out and returns to the login screen', async () => {
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ([]) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+
+    render(<App />);
+
+    await waitFor(() => screen.getByText('Log out'));
+    fireEvent.click(screen.getByText('Log out'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument();
+    });
+  });
+});
