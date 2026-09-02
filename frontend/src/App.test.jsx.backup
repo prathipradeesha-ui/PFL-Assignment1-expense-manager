@@ -190,46 +190,4 @@ describe('App - expense CRUD interactions', () => {
       expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument();
     });
   });
-
-  it('shows expense details when clicked', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ([{ id: 1, date: '2026-08-20', cost_gbp: '45.50', description: 'Client Dinner', expense_type: 'food' }]),
-    });
-
-    render(<App />);
-
-    await waitFor(() => screen.getByText('Expenses'));
-    fireEvent.click(screen.getByText('Expenses'));
-
-    await waitFor(() => screen.getByText('Client Dinner'));
-    fireEvent.click(screen.getByLabelText('View details for Client Dinner'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Expense Details')).toBeInTheDocument();
-    });
-  });
-
-  it('pre-fills the form and updates an expense when edited', async () => {
-    global.fetch = vi.fn()
-      .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: 1, date: '2026-08-20', cost_gbp: '45.50', description: 'Client Dinner', expense_type: 'food' }]) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 1, description: 'Client Dinner Updated' }) })
-      .mockResolvedValueOnce({ ok: true, json: async () => ([{ id: 1, date: '2026-08-20', cost_gbp: '45.50', description: 'Client Dinner Updated', expense_type: 'food' }]) });
-
-    render(<App />);
-
-    await waitFor(() => screen.getByText('Expenses'));
-    fireEvent.click(screen.getByText('Expenses'));
-
-    await waitFor(() => screen.getByText('Client Dinner'));
-    fireEvent.click(screen.getByLabelText('Edit Client Dinner'));
-
-    await waitFor(() => screen.getByText('Edit Expense'));
-    fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Client Dinner Updated' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Update' }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Client Dinner Updated')).toBeInTheDocument();
-    });
-  });
 });
