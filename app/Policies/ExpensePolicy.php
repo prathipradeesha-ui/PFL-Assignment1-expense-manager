@@ -5,9 +5,9 @@ namespace App\Policies;
 use App\Models\Expense;
 use App\Models\User;
 
-// This Policy class holds all authorization rules for the Expense model,
-// separate from the controller (as required by the assignment brief).
-// Each method answers: "is $user allowed to do this to $expense?"
+// This Policy class holds authorisation rules for the Expense model,
+// keeping authorisation logic separate from the controller.
+// create() via the relationship auto-attaches the current user's ID
 class ExpensePolicy
 {
     // Only the expense's owner can view it.
