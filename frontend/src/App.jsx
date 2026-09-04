@@ -9,6 +9,7 @@ const TYPE_ICONS = {
   other: '📦',
 };
 
+// Authentication and Application State
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [view, setView] = useState('dashboard');
@@ -23,14 +24,18 @@ function App() {
   const [authMode, setAuthMode] = useState('login');
   const [error, setError] = useState('');
 
+  // Dashboard Statistics and Calculations
   const totalSpend = expenses.reduce((sum, exp) => sum + parseFloat(exp.cost_gbp), 0);
   const expenseCount = expenses.length;
   const avgSpend = expenseCount ? totalSpend / expenseCount : 0;
+
+// Initialisation and Data Loading
 
   useEffect(() => {
     if (token) fetchExpenses();
   }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
+ // API Communication
   async function fetchExpenses() {
     const res = await fetch(`${API_URL}/expenses`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -41,6 +46,7 @@ function App() {
     }
   }
 
+    // Authentication Operations
   async function handleLogin(e) {
     e.preventDefault();
     setError('');
@@ -88,6 +94,8 @@ function App() {
     }
   }
 
+
+// Add and Update Expense
   async function handleAddExpense(e) {
     e.preventDefault();
     setError('');
@@ -110,6 +118,7 @@ function App() {
     }
   }
 
+// Delete Expense and Confirmation
   function confirmDelete(expense) {
     setDeleteTarget(expense);
   }
@@ -124,6 +133,7 @@ function App() {
     fetchExpenses();
   }
 
+// Expense Details and Editing
   function viewDetail(expense) {
     setSelectedExpense(expense);
     setView('detail');
@@ -140,6 +150,7 @@ function App() {
     setView('add');
   }
 
+   // Authentication User Interface
   if (!token) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
@@ -244,6 +255,7 @@ function App() {
     );
   }
 
+// Main Application User Interface
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-teal-900 px-4 py-3 flex justify-between items-center">
@@ -269,6 +281,7 @@ function App() {
           </button>
         </div>
 
+ {/* Dashboard View */}
         {view === 'dashboard' && (
           <div className="space-y-4">
             <div className="bg-white rounded-xl border border-slate-100 p-4 flex justify-around text-center">
@@ -352,6 +365,8 @@ function App() {
           </div>
         )}
 
+    {/* Expense List View */}
+
         {view === 'list' && (
           <>
             <div className="flex justify-between items-center mb-4">
@@ -412,6 +427,7 @@ function App() {
           </>
         )}
 
+{/* Add/Edit Expense View */}
         {view === 'add' && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
             <h2 className="text-lg font-medium text-slate-700 mb-4">
@@ -487,6 +503,7 @@ function App() {
           </div>
         )}
 
+{/* Expense Details View */}
         {view === 'detail' && selectedExpense && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
             <button onClick={() => setView('list')} className="text-sm text-teal-700 mb-4">
@@ -518,6 +535,7 @@ function App() {
         )}
       </main>
 
+{/* Delete Confirmation Modal */}
       {deleteTarget && (
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog">
